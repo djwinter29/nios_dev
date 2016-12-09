@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Dec 9, 2016 10:40:08 AM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1481280008118</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>09-Dec-2016 14:38:07</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1481294287148</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>D:\TonejetSource\MyProject\nios_dev\software\nios_dev_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>..\..\core.sopcinfo</SopcDesignFile>
@@ -946,4 +946,28 @@
                 <sectionName>.stack</sectionName>
                 <regionName>ram</regionName>
         </LinkerSection>
+        <SoftwarePackageInfo>
+                <name>irq_handler</name>
+                <version>default</version>
+        </SoftwarePackageInfo>
+        <IgnoredFileInfo>
+                <componentName>Altera HAL</componentName>
+                <fileName>alt_irq_handler.c</fileName>
+        </IgnoredFileInfo>
+        <IgnoredFileInfo>
+                <componentName>altera_nios2_gen2_hal_driver</componentName>
+                <fileName>alt_software_exception.S</fileName>
+        </IgnoredFileInfo>
+        <IgnoredFileInfo>
+                <componentName>altera_nios2_gen2_hal_driver</componentName>
+                <fileName>alt_irq_entry.S</fileName>
+        </IgnoredFileInfo>
+        <IgnoredFileInfo>
+                <componentName>altera_nios2_gen2_hal_driver</componentName>
+                <fileName>alt_exception_trap.S</fileName>
+        </IgnoredFileInfo>
+        <IgnoredFileInfo>
+                <componentName>altera_nios2_gen2_hal_driver</componentName>
+                <fileName>alt_exception_entry.S</fileName>
+        </IgnoredFileInfo>
 </sch:Settings>

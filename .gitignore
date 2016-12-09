@@ -25,3 +25,4 @@ mem_init
 obj
 .force_rebuild_all
 *.a
+*.objdump
