@@ -2,7 +2,7 @@
 *                                                                             *
 * License Agreement                                                           *
 *                                                                             *
-* Copyright (c) 2003-2004 Altera Corporation, San Jose, California, USA.      *
+* Copyright (c) 2009      Altera Corporation, San Jose, California, USA.      *
 * All rights reserved.                                                        *
 *                                                                             *
 * Permission is hereby granted, free of charge, to any person obtaining a     *
@@ -26,7 +26,10 @@
 * This agreement shall be governed in all respects by the laws of the State   *
 * of California and by the laws of the United States of America.              *
 *                                                                             *
+* Altera does not recommend, suggest or require that this reference design    *
+* file be used in conjunction or combination with any other product.          *
 ******************************************************************************/
+
 /*
  * Copyright (c) 2016 Ji Dong < ji.dong@hotmail.co.uk >
  *
@@ -49,84 +52,78 @@
  * SOFTWARE.
  */
  
+#include <errno.h>
 #include "system.h"
 
 /*
- * This is the interrupt exception entry point code, which saves all the
- * registers and calls the interrupt handler.  It should be pulled in using
- * a .globl from alt_irq_register.c.  This scheme is used so that if an
- * interrupt is never registered, then this code will not appear in the
- * generated executable, thereby improving code footprint.
+ * Provides an interrupt registry mechanism for the any CPUs internal interrupt
+ * controller (IIC) when the enhanced interrupt API is active.
+ */
+#ifndef ALT_CPU_EIC_PRESENT
+#ifdef ALT_ENHANCED_INTERRUPT_API_PRESENT
+
+#include "alt_types.h"
+#include "sys/alt_irq.h"
+#include "priv/alt_iic_isr_register.h"
+
+/*
+ * The header, alt_irq_entry.h, contains the exception entry point, and is
+ * provided by the processor component. It is included here, so that the code
+ * will be added to the executable only if alt_irq_register() is present, i.e.
+ * if no interrupts are registered - there's no need to provide any 
+ * interrupt handling.
  */
 
-        /*
-         * Explicitly allow the use of r1 (the assembler temporary register)
-         * within this code. This register is normally reserved for the use of
-         * the compiler.
-         */
-        .set noat
+#include "sys/alt_irq_entry.h"
 
-        /*
-         * Pull in the exception handler register save code.
-         */
-        .globl alt_exception
+/*
+ * The header, alt_irq_table.h contains a table describing which function
+ * handles each interrupt.
+ */
 
-        .globl alt_irq_entry
-        .section .exceptions.entry.label, "xa"
-alt_irq_entry:
+#include "priv/alt_irq_table.h"
 
-        /*
-         * Section .exceptions.entry is in alt_exception_entry.S
-         * This saves all the caller saved registers and reads estatus into r5
-         */
+/** @Function Description:  This function registers an interrupt handler. 
+  * If the function is succesful, then the requested interrupt will be enabled
+  * upon return. Registering a NULL handler will disable the interrupt.
+  *
+  * @API Type:              External
+  * @param ic_id            Interrupt controller ID
+  * @param irq              IRQ ID number
+  * @param isr              Pointer to interrupt service routine
+  * @param isr_context      Opaque pointer passed to ISR
+  * @param flags            
+  * @return                 0 if successful, else error (-1)
+  */
+int alt_iic_isr_register(alt_u32 ic_id, alt_u32 irq, alt_isr_func isr, 
+  void *isr_context, void *flags)
+{
+  int rc = -EINVAL;  
+  int id = irq;             /* IRQ interpreted as the interrupt ID. */
+  alt_irq_context status;
 
-        .section .exceptions.irqtest, "xa"
+  if (id < ALT_NIRQ)
+  {
+    /* 
+     * interrupts are disabled while the handler tables are updated to ensure
+     * that an interrupt doesn't occur while the tables are in an inconsistant
+     * state.
+     */
 
-#ifdef ALT_CI_INTERRUPT_VECTOR_N
-        /*
-         * Use the interrupt vector custom instruction if present to accelerate
-         * this code.
-         * If the interrupt vector custom instruction returns a negative
-         * value, there are no interrupts active (estatus.pie is 0
-         * or ipending is 0) so assume it is a software exception.
-         */
-        custom ALT_CI_INTERRUPT_VECTOR_N, r4, r0, r0
-        blt r4, r0, .Lnot_irq
-#else
-        /*
-         * Test to see if the exception was a software exception or caused 
-         * by an external interrupt, and vector accordingly.
-         */
-        /* Read for Yeild function */
-        rdctl r4, ipending
-        rdctl r5, estatus
-        andi  r2, r5, 1
-        beq   r2, zero, .Lnot_irq
-        beq   r4, zero, .Lnot_irq
-#endif /* ALT_CI_INTERRUPT_VECTOR_N */
+    /* status = alt_irq_disable_all(); Remove the value readed */
+    status = alt_irq_disable_all();
 
-        .section .exceptions.irqhandler, "xa"
-        /*
-         * Now that all necessary registers have been preserved, call 
-         * alt_irq_handler() to process the interrupts.
-         */
+    alt_irq[id].handler = isr;
+    alt_irq[id].context = isr_context;
 
-        call alt_irq_handler
+    rc = (isr) ? alt_ic_irq_enable(ic_id, id) : alt_ic_irq_disable(ic_id, id);
+    
+    /* alt_irq_enable_all(status); This line is removed to prevent the interrupt from being immediately enabled. */
+    alt_irq_enable_all(status); 
+  }
 
-        .section .exceptions.irqreturn, "xa"
+  return rc; 
+}
 
-        br    .Lexception_exit
-
-        .section .exceptions.notirq.label, "xa"
-
-.Lnot_irq:
-
-        /*
-         * Section .exceptions.exit is in alt_exception_entry.S
-         * This restores all the caller saved registers
-         */
-
-        .section .exceptions.exit.label
-
-.Lexception_exit:
-
+#endif /* ALT_ENHANCED_INTERRUPT_API_PRESENT */
+#endif /* ALT_CPU_EIC_PRESENT */

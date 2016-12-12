@@ -7,31 +7,33 @@
 
 #include <stdio.h>
 
-#include <sys/alt_alarm.h>
 #include <priv/alt_busy_sleep.h>
 
-static alt_alarm alarm;
+#include "sched.h"
+
+
 static int mainCounter = 0;
-static int timerCounter = 0;
 
-alt_u32 TimerHandler( void * context )
+void * pCurrentTCB = (void *)0x7000;
+
+void TaskContextSwitch( void )
 {
-    /* Increment the kernel tick. */
-    printf("Hello from Timer  %d!\n",  timerCounter++);
-
-    return alt_ticks_per_second();
+    printf("switch task!\n");
 }
-
 
 int main()
 {
-    printf("Hello from Main!\n");
+//    printf("Hello from Main!\n");
 
-    alt_alarm_start(&alarm, alt_ticks_per_second(), TimerHandler, NULL);
+    yield();
+    yield();
+
+    StartSchedTimer();
 
     while(1)
     {
         alt_busy_sleep(1000000);
+        //
         printf("Hello from Main  %d!\n",  mainCounter++);
     }
 

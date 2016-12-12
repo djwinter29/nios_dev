@@ -27,7 +27,28 @@
 * of California and by the laws of the United States of America.              *
 *                                                                             *
 ******************************************************************************/
-
+/*
+ * Copyright (c) 2016 Ji Dong < ji.dong@hotmail.co.uk >
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
+ 
 #include "system.h"
 
 /*
@@ -45,14 +66,16 @@
  * in entirety. This code might still be linked into a system with an EIC, 
  * but would then be used only for non-interrupt exceptions.
  */
-
+        
+        .extern     TaskContextSwitch
         /*
          * Explicitly allow the use of r1 (the assembler temporary register)
          * within this code. This register is normally reserved for the use of
          * the assembler.
          */
         .set noat
-
+        .globl      restore_context
+        .globl      save_sp_to_pCurrentTCB
         /*
          * The top and bottom of the exception stack.
          */
@@ -104,9 +127,10 @@ alt_exception:
          * Switch to the exception stack and save the current stack pointer
          * in memory. Uses the et register as a scratch register.
          */
-        movhi et, %hi(__alt_exception_stack_pointer - 80)
-        ori   et, et, %lo(__alt_exception_stack_pointer - 80) 
-        stw   sp, 76(et)
+        /* Note: save Full register set, 4*10 bytes addtional */
+        movhi et, %hi(__alt_exception_stack_pointer - 120)
+        ori   et, et, %lo(__alt_exception_stack_pointer - 120) 
+        stw   sp, 116(et)
         mov   sp, et
 
 #ifdef ALT_STACK_CHECK
@@ -122,7 +146,7 @@ alt_exception:
         /* 
          * Reserve space on normal stack for registers about to be pushed.
          */
-        addi  sp, sp, -76
+        addi  sp, sp, -116
 
 #ifdef ALT_STACK_CHECK
         /* Ensure stack didn't just overflow. */
@@ -139,33 +163,46 @@ alt_exception:
          * Leave a gap in the stack frame at 4(sp) for the muldiv handler to
          * store zero into.
          */
-        stw   ra,  0(sp)
-        stw   r1,   8(sp)
-        stw   r2,  12(sp)
-        stw   r3,  16(sp)
-        stw   r4,  20(sp)
-        stw   r5,  24(sp)
-        stw   r6,  28(sp)
-        stw   r7,  32(sp)
-        rdctl r5, estatus   /* Read early to avoid usage stall */
-        stw   r8,  36(sp)
-        stw   r9,  40(sp)
-        stw   r10, 44(sp)
-        stw   r11, 48(sp)
-        stw   r12, 52(sp)
-        stw   r13, 56(sp)
-        stw   r14, 60(sp)
-        stw   r15, 64(sp)
-
+        stw   ra,    0(sp)
+        stw   r1,    8(sp)
+        stw   r2,   12(sp)
+        stw   r3,   16(sp)
+        stw   r4,   20(sp)
+        stw   r5,   24(sp)
+        stw   r6,   28(sp)
+        stw   r7,   32(sp)
+        rdctl r5,   estatus   /* Read early to avoid usage stall */
+        stw   r8,   36(sp)
+        stw   r9,   40(sp)
+        stw   r10,  44(sp)
+        stw   r11,  48(sp)
+        stw   r12,  52(sp)
+        stw   r13,  56(sp)
+        stw   r14,  60(sp)
+        stw   r15,  64(sp)
+        stw   r16,  68(sp)   /* Save the remaining 10 registers */
+        stw   r17,  72(sp)
+        stw   r18,  76(sp)
+        stw   r19,  80(sp)
+        stw   r20,  84(sp)
+        stw   r21,  88(sp)
+        stw   r22,  92(sp)
+        stw   r23,  96(sp)
+        stw   gp,  100(sp)
+        stw   fp,  104(sp)
         /*
          * ea-4 contains the address of the instruction being executed
          * when the exception occured. For interrupt exceptions, we will
          * will be re-issue the isntruction. Store it in 72(sp)
          */
-        stw   r5,  68(sp)  /* estatus */
+        stw   r5,  108(sp)  /* estatus */
         addi  r15, ea, -4  /* instruction that caused exception */
-        stw   r15,  72(sp)
-
+        stw   r15, 112(sp)
+save_sp_to_pCurrentTCB:
+        movia  et, pCurrentTCB  /* Load the address of the pCurrentTCB pointer */
+        ldw    et, (et)         /* Load the value of the pCurrentTCB pointer */
+        stw    sp, (et)         /* Store the stack pointer into the top of the TCB */
+        
         /*
          * The interrupt testing code (.exceptions.irqtest) will be
          * linked here. If the Internal Interrupt Controller (IIC) is
@@ -193,7 +230,7 @@ alt_exception:
          * instruction that caused the exception is written in r2, which these
          * handlers will utilize.
          */
-        stw ea, 72(sp) /* EA is PC+4 so will skip over instruction causing exception */
+        stw ea, 112(sp) /* EA is PC+4 so will skip over instruction causing exception */
 
 #ifdef NIOS2_CDX_PRESENT
         mov.n r4, ea            /* EA contains PC+4 of instruction that caused the exception */
@@ -213,7 +250,7 @@ alt_exception:
         beqz.n r5, .Lunknown_16bit
 
 .Lunknown_32bit:
-        stw ea, 72(sp) /* EA is PC+4 so will skip over instruction causing exception */
+        stw ea, 112(sp) /* EA is PC+4 so will skip over instruction causing exception */
 
         /* Load most-significant 16 bits of instruction */
         ldhu.n r3, 2(r4)
@@ -223,7 +260,7 @@ alt_exception:
 
 .Lunknown_16bit:
         addi.n r4, r4, 2 /* Need PC+2 to skip over instruction causing exception */
-        stw r4, 72(sp)
+        stw r4, 112(sp)
 
 #else /* CDX is not Enabled and all instructions are 32bits */
         ldw r2, -4(ea) /* Instruction value that caused exception */
@@ -274,16 +311,16 @@ alt_exception:
          * instruction
          *
          * Return code was 0: Skip. The instruction after the exception is
-         * already stored in 72(sp).
+         * already stored in 112(sp).
          */
         bne   r2, r0, .Lexception_exit
 
         /*
-         * Otherwise, modify 72(sp) to re-issue the instruction that caused the
+         * Otherwise, modify 112(sp) to re-issue the instruction that caused the
          * exception.
          */
         addi  r15, ea, -4  /* instruction that caused exception */
-        stw   r15,  72(sp)
+        stw   r15,  112(sp)
 
 #else /* ALT_INCLUDE_INSTRUCTION_RELATED_EXCEPTION_API disabled */
 
@@ -346,14 +383,17 @@ alt_exception_unknown:
 .Lexception_exit:
 
         .section .exceptions.exit, "xa"
-
+restore_sp_from_pCurrentTCB:
+        movia   et, pCurrentTCB   /* Load the address of the pCurrentTCB pointer  */
+        ldw     et, (et)          /* Load the value of the pCurrentTCB pointer */
+        ldw     sp, (et)          /* Load the stack pointer with the top value of the TCB */
         /* 
          * Restore the saved registers, so that all general purpose registers 
          * have been restored to their state at the time the interrupt occured.
          */
-
-        ldw   r5,  68(sp)
-        ldw   ea,  72(sp)  /* This becomes the PC once eret is executed */
+restore_context:
+        ldw   r5, 108(sp)
+        ldw   ea, 112(sp)  /* This becomes the PC once eret is executed */
         ldw   ra,   0(sp)
 
         wrctl estatus, r5
@@ -370,23 +410,32 @@ alt_exception_unknown:
         ldw   et, %gprel(alt_exception_old_stack_limit)(gp)
 #endif
 
-        ldw   r8,  36(sp)
-        ldw   r9,  40(sp)
-        ldw   r10, 44(sp)
-        ldw   r11, 48(sp)
-        ldw   r12, 52(sp)
-        ldw   r13, 56(sp)
-        ldw   r14, 60(sp)
-        ldw   r15, 64(sp)
-
+        ldw   r8,   36(sp)
+        ldw   r9,   40(sp)
+        ldw   r10,  44(sp)
+        ldw   r11,  48(sp)
+        ldw   r12,  52(sp)
+        ldw   r13,  56(sp)
+        ldw   r14,  60(sp)
+        ldw   r15,  64(sp)
+        ldw   r16,  68(sp)     /* Load the remaining registers */
+        ldw   r17,  72(sp)
+        ldw   r18,  76(sp)
+        ldw   r19,  80(sp)
+        ldw   r20,  84(sp)
+        ldw   r21,  88(sp)
+        ldw   r22,  92(sp)
+        ldw   r23,  96(sp)
+        ldw   gp,  100(sp)
+        ldw   fp,  104(sp)
 #ifdef ALT_EXCEPTION_STACK
 #ifdef ALT_STACK_CHECK
         stw   et, %gprel(alt_stack_limit_value)(gp)
         stw   zero, %gprel(alt_exception_old_stack_limit)(gp)
 #endif /* ALT_STACK_CHECK */
-        ldw   sp,  76(sp)
+        ldw   sp,  116(sp)
 #else /* ALT_EXCEPTION_STACK disabled */
-        addi  sp, sp, 76
+        addi  sp, sp, 116
 #endif /* ALT_EXCEPTION_STACK */
 
         /*

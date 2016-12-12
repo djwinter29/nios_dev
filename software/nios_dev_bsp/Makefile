@@ -329,7 +329,8 @@ irq_handler_SRCS_ROOT := HAL
 
 # irq_handler sources 
 irq_handler_C_LIB_SRCS := \
-	$(irq_handler_SRCS_ROOT)/src/alt_irq_handler.c
+	$(irq_handler_SRCS_ROOT)/src/alt_iic_isr_register.c \
+	$(irq_handler_SRCS_ROOT)/src/alt_instruction_exception_entry.c
 
 irq_handler_ASM_LIB_SRCS := \
 	$(irq_handler_SRCS_ROOT)/src/alt_exception_entry.S \

@@ -19,7 +19,11 @@ add_sw_property asm_source src/alt_exception_entry.S
 add_sw_property asm_source src/alt_exception_trap.S
 add_sw_property asm_source src/alt_irq_entry.S
 add_sw_property asm_source src/alt_software_exception.S
-add_sw_property c_source src/alt_irq_handler.c
+
+
+
+add_sw_property c_source src/alt_iic_isr_register.c
+add_sw_property c_source src/alt_instruction_exception_entry.c
 #add_sw_property c_source src/ipv4_mini.c
 
 

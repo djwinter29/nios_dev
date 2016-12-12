@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>09-Dec-2016 14:38:07</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1481294287148</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>12-Dec-2016 11:27:20</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1481542040872</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>D:\TonejetSource\MyProject\nios_dev\software\nios_dev_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>..\..\core.sopcinfo</SopcDesignFile>
@@ -952,7 +952,7 @@
         </SoftwarePackageInfo>
         <IgnoredFileInfo>
                 <componentName>Altera HAL</componentName>
-                <fileName>alt_irq_handler.c</fileName>
+                <fileName>alt_iic_isr_register.c</fileName>
         </IgnoredFileInfo>
         <IgnoredFileInfo>
                 <componentName>altera_nios2_gen2_hal_driver</componentName>
@@ -961,6 +961,10 @@
         <IgnoredFileInfo>
                 <componentName>altera_nios2_gen2_hal_driver</componentName>
                 <fileName>alt_irq_entry.S</fileName>
+        </IgnoredFileInfo>
+        <IgnoredFileInfo>
+                <componentName>altera_nios2_gen2_hal_driver</componentName>
+                <fileName>alt_instruction_exception_entry.c</fileName>
         </IgnoredFileInfo>
         <IgnoredFileInfo>
                 <componentName>altera_nios2_gen2_hal_driver</componentName>

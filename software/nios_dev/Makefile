@@ -142,7 +142,8 @@ ACDS_VERSION := 16.1
 ELF := nios_dev.elf
 
 # Paths to C, C++, and assembly source files.
-C_SRCS := main.c
+C_SRCS += main.c
+C_SRCS += timer.c
 CXX_SRCS :=
 ASM_SRCS :=
 

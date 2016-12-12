@@ -26,3 +26,4 @@ obj
 .force_rebuild_all
 *.a
 *.objdump
+.force_relink
