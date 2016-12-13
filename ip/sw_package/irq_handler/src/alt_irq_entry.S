@@ -97,12 +97,11 @@ alt_irq_entry:
          * Test to see if the exception was a software exception or caused 
          * by an external interrupt, and vector accordingly.
          */
-        /* Read for Yeild function */
-        rdctl r4, ipending
-        rdctl r5, estatus
-        andi  r2, r5, 1
-        beq   r2, zero, .Lnot_irq
-        beq   r4, zero, .Lnot_irq
+        rdctl r4, ipending   /* Load the Pending Interrupts indication */
+        rdctl r5, estatus    /*Load the eStatus (enabled interrupts).*/
+        andi  r2, r5, 1      /*Are interrupts enabled globally*/
+        beq   r2, zero, .Lnot_irq   /*Interrupts are not enabled*/
+        beq   r4, zero, .Lnot_irq   /*There are no interrupts triggered*/
 #endif /* ALT_CI_INTERRUPT_VECTOR_N */
 
         .section .exceptions.irqhandler, "xa"
@@ -127,6 +126,5 @@ alt_irq_entry:
          */
 
         .section .exceptions.exit.label
-
 .Lexception_exit:
 

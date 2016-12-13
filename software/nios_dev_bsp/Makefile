@@ -329,14 +329,11 @@ irq_handler_SRCS_ROOT := HAL
 
 # irq_handler sources 
 irq_handler_C_LIB_SRCS := \
-	$(irq_handler_SRCS_ROOT)/src/alt_iic_isr_register.c \
-	$(irq_handler_SRCS_ROOT)/src/alt_instruction_exception_entry.c
+	$(irq_handler_SRCS_ROOT)/src/alt_iic_isr_register.c
 
 irq_handler_ASM_LIB_SRCS := \
 	$(irq_handler_SRCS_ROOT)/src/alt_exception_entry.S \
-	$(irq_handler_SRCS_ROOT)/src/alt_exception_trap.S \
-	$(irq_handler_SRCS_ROOT)/src/alt_irq_entry.S \
-	$(irq_handler_SRCS_ROOT)/src/alt_software_exception.S
+	$(irq_handler_SRCS_ROOT)/src/alt_irq_entry.S
 
 
 # Assemble all component C source files 

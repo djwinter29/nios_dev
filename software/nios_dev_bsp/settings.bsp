@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>12-Dec-2016 11:27:20</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1481542040872</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>Dec 13, 2016 11:59:53 AM</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1481630393558</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>D:\TonejetSource\MyProject\nios_dev\software\nios_dev_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>..\..\core.sopcinfo</SopcDesignFile>
@@ -14,7 +14,7 @@
                 <SettingName>hal.sys_clk_timer</SettingName>
                 <Identifier>ALT_SYS_CLK</Identifier>
                 <Type>UnquotedString</Type>
-                <Value>timer</Value>
+                <Value>none</Value>
                 <DefaultValue>none</DefaultValue>
                 <DestinationFile>system_h_define</DestinationFile>
                 <Description>Slave descriptor of the system clock timer device. This device provides a periodic interrupt ("tick") and is typically required for RTOS use. This setting defines the value of ALT_SYS_CLK in system.h.</Description>
@@ -26,7 +26,7 @@
                 <SettingName>hal.timestamp_timer</SettingName>
                 <Identifier>ALT_TIMESTAMP_CLK</Identifier>
                 <Type>UnquotedString</Type>
-                <Value>timestamp</Value>
+                <Value>none</Value>
                 <DefaultValue>none</DefaultValue>
                 <DestinationFile>system_h_define</DestinationFile>
                 <Description>Slave descriptor of timestamp timer device. This device is used by Altera HAL timestamp drivers for high-resolution time measurement. This setting defines the value of ALT_TIMESTAMP_CLK in system.h.</Description>
@@ -961,14 +961,6 @@
         <IgnoredFileInfo>
                 <componentName>altera_nios2_gen2_hal_driver</componentName>
                 <fileName>alt_irq_entry.S</fileName>
-        </IgnoredFileInfo>
-        <IgnoredFileInfo>
-                <componentName>altera_nios2_gen2_hal_driver</componentName>
-                <fileName>alt_instruction_exception_entry.c</fileName>
-        </IgnoredFileInfo>
-        <IgnoredFileInfo>
-                <componentName>altera_nios2_gen2_hal_driver</componentName>
-                <fileName>alt_exception_trap.S</fileName>
         </IgnoredFileInfo>
         <IgnoredFileInfo>
                 <componentName>altera_nios2_gen2_hal_driver</componentName>
