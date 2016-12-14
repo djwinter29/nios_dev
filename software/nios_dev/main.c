@@ -11,8 +11,6 @@
 #include <sys/alt_irq.h>
 #include "sched.h"
 
-
-static int mainCounter = 0;
 static volatile int taskedcount1 = 0;
 static volatile int taskedcount2 = 0;
 
@@ -51,16 +49,6 @@ int main()
     alt_irq_enable_all(status);
 
     StartScheduler();
-
-
-    while(1)
-    {
-        alt_busy_sleep(1000000);
-        //yield();
-        //
-        printf("Hello from Main  %d!\n",  mainCounter++);
-    }
-
 
     return 0;
 }
