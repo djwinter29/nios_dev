@@ -13,32 +13,50 @@
 
 
 static int mainCounter = 0;
+static volatile int taskedcount1 = 0;
+static volatile int taskedcount2 = 0;
 
-
-void * pCurrentTCB = (void *)0x7000;
-
-static volatile int taskedcount = 0;
-
-void TaskContextSwitch( void )
+int Task1(void * test)
 {
-    //printf("switch task!\n");
-    taskedcount ++;
+    while (1)
+    {
+        alt_busy_sleep(1000000);
+        printf("Hello from Task1  %d!\n",  taskedcount1++);
+    }
+
+    return 0;
+}
+
+int Task2(void * test)
+{
+    while (1)
+    {
+        alt_busy_sleep(1000000);
+        printf("Hello from Task2  %d!\n",  taskedcount2++);
+    }
+
+    return 0;
 }
 
 int main()
 {
 //    printf("Hello from Main!\n");
+
+
+    CreateStaticTask(0, Task1, NULL);
+    CreateStaticTask(1, Task2, NULL);
+
     alt_irq_context status = alt_irq_disable_all ();
-
-    yield();
-    yield();
-
-   // StartSchedTimer();
+    StartSchedTimer();
     alt_irq_enable_all(status);
+
+    StartScheduler();
+
+
     while(1)
     {
         alt_busy_sleep(1000000);
-        yield();
+        //yield();
         //
         printf("Hello from Main  %d!\n",  mainCounter++);
     }

@@ -76,6 +76,7 @@
         .set noat
         .globl      restore_context
         .globl      save_sp_to_pCurrentTCB
+        .globl      restore_sp_from_pCurrentTCB
         /*
          * The top and bottom of the exception stack.
          */
@@ -438,15 +439,14 @@ restore_context:
         ldw     r23, 104(sp)
         ldw     gp, 108(sp)
         ldw     fp, 112(sp)
-        addi    sp, sp, 116     /* Release stack space*/
 #ifdef ALT_EXCEPTION_STACK
 #ifdef ALT_STACK_CHECK
         stw   et, %gprel(alt_stack_limit_value)(gp)
         stw   zero, %gprel(alt_exception_old_stack_limit)(gp)
 #endif /* ALT_STACK_CHECK */
-        ldw   sp,  76(sp)
+        ldw   sp,  116(sp)
 #else /* ALT_EXCEPTION_STACK disabled */
-        addi  sp, sp, 76
+        addi  sp, sp, 116    /* Release stack space*/
 #endif /* ALT_EXCEPTION_STACK */
 
         /*

@@ -144,6 +144,7 @@ ELF := nios_dev.elf
 # Paths to C, C++, and assembly source files.
 C_SRCS += main.c
 C_SRCS += timer.c
+C_SRCS += task.c
 CXX_SRCS :=
 ASM_SRCS :=
 

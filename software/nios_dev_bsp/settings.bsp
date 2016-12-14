@@ -2,8 +2,8 @@
 <sch:Settings xmlns:sch="http://www.altera.com/embeddedsw/bsp/schema">
         <BspType>hal</BspType>
         <BspVersion>default</BspVersion>
-        <BspGeneratedTimeStamp>Dec 13, 2016 11:59:53 AM</BspGeneratedTimeStamp>
-        <BspGeneratedUnixTimeStamp>1481630393558</BspGeneratedUnixTimeStamp>
+        <BspGeneratedTimeStamp>14-Dec-2016 11:09:41</BspGeneratedTimeStamp>
+        <BspGeneratedUnixTimeStamp>1481713781300</BspGeneratedUnixTimeStamp>
         <BspGeneratedLocation>D:\TonejetSource\MyProject\nios_dev\software\nios_dev_bsp</BspGeneratedLocation>
         <BspSettingsFile>settings.bsp</BspSettingsFile>
         <SopcDesignFile>..\..\core.sopcinfo</SopcDesignFile>
@@ -14,7 +14,7 @@
                 <SettingName>hal.sys_clk_timer</SettingName>
                 <Identifier>ALT_SYS_CLK</Identifier>
                 <Type>UnquotedString</Type>
-                <Value>none</Value>
+                <Value>timer</Value>
                 <DefaultValue>none</DefaultValue>
                 <DestinationFile>system_h_define</DestinationFile>
                 <Description>Slave descriptor of the system clock timer device. This device provides a periodic interrupt ("tick") and is typically required for RTOS use. This setting defines the value of ALT_SYS_CLK in system.h.</Description>
@@ -26,7 +26,7 @@
                 <SettingName>hal.timestamp_timer</SettingName>
                 <Identifier>ALT_TIMESTAMP_CLK</Identifier>
                 <Type>UnquotedString</Type>
-                <Value>none</Value>
+                <Value>timestamp</Value>
                 <DefaultValue>none</DefaultValue>
                 <DestinationFile>system_h_define</DestinationFile>
                 <Description>Slave descriptor of timestamp timer device. This device is used by Altera HAL timestamp drivers for high-resolution time measurement. This setting defines the value of ALT_TIMESTAMP_CLK in system.h.</Description>
@@ -158,7 +158,7 @@
                 <SettingName>hal.linker.enable_interrupt_stack</SettingName>
                 <Identifier>none</Identifier>
                 <Type>Boolean</Type>
-                <Value>0</Value>
+                <Value>1</Value>
                 <DefaultValue>0</DefaultValue>
                 <DestinationFile>none</DestinationFile>
                 <Description>Enables use of a separate interrupt stack. If true, defines the macro ALT_INTERRUPT_STACK in linker.h, adds a memory region called interrupt_stack to linker.x, and provides the symbols __alt_interrupt_stack_pointer and __alt_interrupt_stack_limit in linker.x.</Description>
@@ -170,7 +170,7 @@
                 <SettingName>hal.linker.interrupt_stack_size</SettingName>
                 <Identifier>none</Identifier>
                 <Type>DecimalNumber</Type>
-                <Value>1024</Value>
+                <Value>512</Value>
                 <DefaultValue>1024</DefaultValue>
                 <DestinationFile>none</DestinationFile>
                 <Description>Size of the interrupt stack in bytes.</Description>

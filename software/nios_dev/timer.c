@@ -11,16 +11,15 @@
 
 #include <stdio.h>
 
+#include "sched.h"
+
 
 static alt_alarm alarm;
-
-static int timerCounter = 0;
 
 alt_u32 TimerHandler( void * context )
 {
     /* Increment the kernel tick. */
-    printf("Hello from Timer  %d!\n",  timerCounter++);
-
+    TaskContextSwitch();
     return alt_ticks_per_second();
 }
 
